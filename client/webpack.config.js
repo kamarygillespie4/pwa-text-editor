@@ -47,7 +47,29 @@ module.exports = () => {
     ],
 
     module: {
-      rules: [],
+      rules: [
+        {
+          // This looks for a .css file and adds this into the bundle.js file
+          test: /\.css$/i,
+          // Additional modules for converting the css into js
+          use: ["style-loader", "css-loader"],
+        },
+        {
+          test: /\.m?js$/,
+          exclude: /node_modules/,
+          // Add babel-loader to webpack in order to use ES6
+          use: {
+            loader: "babel-loader",
+            options: {
+              presets: ["@babel/preset-env"],
+              plugins: [
+                "@babel/plugin-proposal-object-rest-spread",
+                "@babel/transform-runtime",
+              ],
+            },
+          },
+        },
+      ],
     },
   };
 };
