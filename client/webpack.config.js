@@ -9,29 +9,44 @@ const { InjectManifest } = require("workbox-webpack-plugin");
 module.exports = () => {
   return {
     mode: "development",
+    // Entry point for files
     entry: {
       main: "./src/js/index.js",
       install: "./src/js/install.js",
     },
+    // Output for our bundles
     output: {
       filename: "[name].bundle.js",
       path: path.resolve(__dirname, "dist"),
     },
+
+    // Add and configure workbox plugins for a service worker and manifest file.
     plugins: [
+      // Webpack plugin that generates our html file and injects our bundles.
       new HtmlWebpackPlugin({
+        // Creates a copy of the index.html file in the dist folder and inserts in script tag to the newly created bundle.js file
         template: "./index.html",
+        // Optional parameters
+        title: "Text Editor",
       }),
+
+      // Injects our custom service worker
+      new InjectManifest({
+        swSrc: "./src-sw.js",
+        swDest: "src-sw.js",
+      }),
+
+      // Creates a manifest.json file.
       new WebpackPwaManifest({
+        fingerprints: false,
+        inject: true,
         name: "Just another text editor",
         short_name: "JATE",
-        description: "Just Another Text Editor",
-        display: "standalone",
+        description: "Just another text editor!",
         background_color: "#1e1e1e",
         theme_color: "#1e1e1e",
         start_url: "/",
         publicPath: "/",
-        fingerprints: false,
-        inject: true,
         icons: [
           {
             src: path.resolve("src/images/logo.png"),
@@ -40,13 +55,10 @@ module.exports = () => {
           },
         ],
       }),
-      new InjectManifest({
-        swSrc: "./src-sw.js",
-        swDest: "src-sw.js",
-      }),
     ],
 
     module: {
+      // Add CSS loaders to webpack
       rules: [
         {
           // This looks for a .css file and adds this into the bundle.js file
